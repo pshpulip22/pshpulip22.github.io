@@ -215,7 +215,7 @@ Graph reconstruction task에서 Transformer와 GCT의 학습된 Structure를 분
 
 <img src="https://github.com/Coding-Child/nlp_master/assets/115800583/e8baf51c-23fa-4e97-a547-b6ede3166d48" alt="image" style="zoom:50%;" />
 
-Transformer와 비교했을때 KL Divergence 값과 Entropy에서 모두 낮게 나오는 것을 볼 수 있지만, $\text{GCN_{P}}$와 비교했을 때는 비슷하거나 조금 더 높은 값을 계산하는 것을 알 수 있다.
+Transformer와 비교했을때 KL Divergence 값과 Entropy에서 모두 낮게 나오는 것을 볼 수 있지만, $\text{GCN}_{P}$와 비교했을 때는 비슷하거나 조금 더 높은 값을 계산하는 것을 알 수 있다.
 
 
 
