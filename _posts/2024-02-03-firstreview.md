@@ -12,7 +12,7 @@ published: true
 
 categories: Medical AI
 
-typora-copy-images-to: ..\assets\images\2024-02-03-firstreview
+typora-copy-images-to: ../assets/images/2024-02-03-firstreview
 
 ---
 
@@ -32,7 +32,7 @@ EHR 데이터의 경우 보통 계층적 그래프로 표현될 수 있는 관�
 
 아래의 그림을 통해 예시를 들 수 있다.
 
-<img src="assets/images/2024-02-03-firstreview/image-20240203142959322.png" alt="image-20240203142959322" style="zoom: 50%;" />
+<img src="../assets/images/2024-02-03-firstreview/image-20240203142959322.png" alt="image-20240203142959322" style="zoom: 50%;" />
 
 그림의 Graph Structure를 bag-of-features로 처리시 Benzonatate라는 치료가 Cough에 의해 내려진 구조이지만, 이를 무시하게 될 수도 있다는 것이다. 즉, 기존의 방법을 사용할 시 정보 손실을 일으킬 수 있다.
 
@@ -56,7 +56,7 @@ EHR 데이터의 경우 보통 계층적 그래프로 표현될 수 있는 관�
 
 ### *Electronic Health Records as a Graph*
 
-<img src="assets/images/2024-02-03-firstreview/image-20240203142959322.png" alt="image-20240203142959322" style="zoom: 50%;" />
+<img src="../assets/images/2024-02-03-firstreview/image-20240203142959322.png" alt="image-20240203142959322" style="zoom: 50%;" />
 
 Figure 1에 나타난 대로, $t$번째 방문 $V(t)$는 맨위의 방문 노드 $v(t)$으로 부터 내려오기 시작한다.
 
