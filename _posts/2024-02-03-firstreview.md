@@ -4,7 +4,7 @@ title: "[논문 리뷰] Learning the Graphical Structure of Electronic Health Re
 decription: "Medical AI Paper review"
 comments: true
 published: true
-categories: Medical AI
+categories: MedicalAI
 use_math: true
 ---
 
