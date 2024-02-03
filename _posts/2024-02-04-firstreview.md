@@ -1,0 +1,242 @@
+---
+
+layout: single
+title: "[논문 리뷰] Learning the Graphical Structure of Electronic Health Records with Graph Convolutional Transformer (AAAI, 2019)"
+decription: "Medical AI Paper review"
+comments: true
+published: true
+categories: MedicalAI
+---
+
+
+
+## Overview
+
+이번에 리뷰할 논문은 2019년에 AAAI에 출판된 Learning the Graphical Structure of Electronic Health Records with Graph Convolutional Transformer이라는 논문이다. 이 논문은 의료 분야의 전자 건강 기록이라 불리는 Electronic Health Records (EHR)이라 불리는 데이터를 Graph Convolution Network (GCN)과 Transformer를 이용하여 EHR의 representation을 학습한 연구이다.
+
+
+
+## Introduction
+
+기존의 연구에서는 EHR 시스템에서 수집된 대규모 의료 기록은 진단 예측, 의료 개념 표현 학습, 해석 가능한 예측 과 같은 다양한 task들에서 높은 성능을 보였다. 이를 통해 EHR은 진단 코드, 검사 결과, 진료 등 심지어 환자 자체를 효과적으로 표현하는 방법을 배우는 것이 EHR 관련 작업을 수행하는 데에 필수적이라고 볼 수 있다.
+
+EHR 데이터의 경우 보통 계층적 그래프로 표현될 수 있는 관계형 데이터 베이스에 저장되어진다. 그러나 이 연구의 전까지는 일반적으로 데이터를 bag-of-features의 방식으로 처리하였다. 이는 의사의 결정 과정을 반영하는 Graph적인 형태를 무시하게 된다.
+
+아래의 그림을 통해 예시를 들 수 있다.
+
+<img src="https://github.com/mmistakes/minimal-mistakes/assets/126770258/7c3682a9-8040-40d4-a9a6-b23e479309c6" alt="image-20240203142959322" style="zoom:50%;" />
+
+그림의 Graph Structure를 bag-of-features로 처리시 Benzonatate라는 치료가 Cough에 의해 내려진 구조이지만, 이를 무시하게 될 수도 있다는 것이다. 즉, 기존의 방법을 사용할 시 정보 손실을 일으킬 수 있다.
+
+이런 문제점을 통해 해당 연구는 아래의 3가지 Contribution을 가지고 있다.
+
+---
+
+- 본 연구는 EHR 데이터의 숨겨진 구조와 지도학습의 예측 작업의 공동 학습을 성공적으로 수행한 최초의 연구이다.
+
+- Attention Mask와 Conditional probability 기반 규제 형태의 prior knowledge를 활용하여 Self-attention을 Guide하고, EHR의 숨겨진 구조를 학습하도록 Transformer에 독창적인 구조적 수정을 제안한다.
+
+- GCT는 합성 데이터셋과 공개된 EHR 데이터셋에서의 모든 예측 작업에서 모든 Baseline 모델들을 능가하여, EHR 데이터에 대한 효과적인 일반적인 표현 학습 알고리즘 으로서의 잠재력을 보여준다.
+
+---
+
+
+
+
+
+## Method
+
+### *Electronic Health Records as a Graph*
+
+<img src="https://github.com/mmistakes/minimal-mistakes/assets/126770258/7c3682a9-8040-40d4-a9a6-b23e479309c6" alt="image-20240203142959322" style="zoom:50%;" />
+
+Figure 1에 나타난 대로, $t$번째 방문 $V(t)$는 맨위의 방문 node $v(t)$으로 부터 내려오기 시작한다.
+
+그 아래에는 진단(Diagnosis) node $d_{1}^{(t)},...,d_{\vert d^{t}\vert}^{(t)}$가 있으며, 이는 일련의 치료(Treatment) node $m_{1}^{(t)},...,m_{\vert m^{t}\vert}^{(t)}$를 만들게 되는데 이때 아래 첨자로 있는 $\vert d^{(t)}\vert, \vert r^{(t)}\vert$는 각각 $V(t)$에서 진단 및 치료의 코드 수를 나타낸다. 또한 일부 치료는 연속 값(혈압) 또는 binary 값 (양/음성 알레르기 반응)과 연관된 검사 결과 (Lab Result) node $r_{1}^{(t)},...,r_{\vert r^{t}\vert}^{(t)}$이 생성되며, 이후에 설명에선 방문 횟수를 나타내는 $t$를 생략하고 진행하도록 하겠다.
+
+
+
+이 논문의 큰 맥락은 다음과 같다.
+  - 만약 모든 node들이 특정 잠재 공간에서 표현이 가능하다면 $\vert d\vert + \vert m\vert + \vert r\vert$개의 node로 이루어진 encounter로 볼 수 있다.
+  - 후에 나오는 인접행렬 $A$는 EHR의 구조를 표현하는 행렬이다. 또한 $d_{i}, m_{i}, r_{i}$를 의미하는 통합 용어로 $c_{i}$를 사용한다. 
+  - 만약 $c_{i}$와 $A$가 함께 있을 경우 Graph Network를 사용하여 방문 표현 $v$를 도출해낸다.
+  - Sturucture 정보 $A$가 없을 경우 Transformer의 feed-forward network를 사용하여 $v$를 도출해낸다.
+  - 위의 과정들은 기본적으로 모든 node 표현 $c_{i}$를 합산하고 어떤 잠재공간으로 투영하는 과정이다.
+
+
+
+### *Transformer and Graph Networks*
+
+해당 연구에서는 한가지의 문제점을 둔다. Structure 정보 $A$가 없더라도, 진단 및 치료를 요청할 때 의사가 어떤 결정을 내렸는지 명백히 존재한다는 점을 감안하면 $V$를 $c_{i}$의 bag-of-nodes로 취급하는 것은 각 node 간의 상호작용을 고려하지 않을 수 있다는 문제점이다.
+
+<img src="https://github.com/Coding-Child/nlp_master/assets/115800583/ba06f7b3-6b80-490e-9064-6c6f605c1858" alt="image" style="zoom:50%;" />
+
+Figure 2에서 알 수 있듯이 encounter의 각 node들을 학습 시작시에는 모두 연결해 놓은 상태로 진행하게 된다. 이때 Transformer의 self-attention을 이용하여 Structure를 학습해 나가며, 각 node별로 의미있는 connection에는 더 강한 edge weight를 의미가 없는 connection에는 약한 edge weight를 주는 방식으로 학습을 진행하게 된다.
+
+|            기호             | 설명                                                         |
+| :-------------------------: | :----------------------------------------------------------- |
+|         $\tilde{A}$         | Structure 정보를 가진 Addjency Matrix A와 그래프 상에서 self-connection을 포함한 Normalization이 된 Matrix |
+|         $\tilde{D}$         | $\tilde{A}$의 Normalization이 된 Node Degree Matrix          |
+|     $C^{(j)}, W^{(j)}$      | 각 $j$번째 convolution, node embedding과 학습 가능한 parameter |
+|         $MLP^{(j)}$         | $j$번째 convolution의 Multi-Layer Perceptron으로, 자체적으로 학습 가능한 parameter 지님 |
+| $Q^{(j)}, K^{(j)}, V^{(j)}$ | Transformer의 Query, Key, Value                              |
+
+- Case A: Structure 정보 $A$를 알고 있는 경우 GCN을 사용할 수 있으며, 이 경우 아래의 GCN 식을 가지고 연산을 수행한다.
+  $$
+  C^{(j)} = \text{MLP}(\tilde{D}^{-1}\tilde{A}C^{(j - 1)}W^{(j)})\quad\quad\quad\quad(1)
+  $$
+  이식은 $j$번째 layer에서 $C^{(j)}$는 이전 layer의 $C^{(j-1)}$에 Weight Matrix $W^{(j)}$를 곱한 후 $A$와 Node Degree Matrix의 inverse matrix인 $\tilde{D}^{-1}$을 곱하여 Graph의 Structure를 적용한 다음 $\text{MLP}$를 통과 시켜 현재 층의 $j$번째 층의 $C{(j)}$를 얻게 된다. 이 과정은 Graph의 Structure를 고려하여 인접한 node의 정보를 aggregation하고, non-linearity function을 적용하여 각 layer에서 node의 새로운 representation을 학습하는 것으로 이해할 수 있다.
+
+  
+
+  이 GCN 식을 이용하여 Structure 정보 $A$가 주어진 encounter의 경우 숨겨진 Structure를 파악하여 학습을 진행할 수 있다
+
+- Case B: Structure 정보 $A$를 모르는 경우 Transformer를 사용하여 Single-Head Attention을 갖는 encoder를 사용한다. 이를 위해 Transformer의 Scaled Dot-Product를 적용한다.
+  $$
+  C^{(j)}=\text{MLP}^{(j)}(\text{softmax}(\frac{Q^{(j)}K^{(j)T}}{\sqrt{d}})V^{(j)})\quad\quad\quad\quad(2)
+  $$
+  
+
+  위의 식은 Transformer의 Scaled Dot-Product를 이용하여 attention weight가 적용된 feature를 얻게 되며, 이를 $\text{MLP}$를 통해 최종 output을 계산하게 된다. 이는 입력간의 상대적인 중요도를 계산하는 역할을 진행한다고 볼 수 있다.
+
+위의 식(1)과 식(2)를 고려해보면, Normalized adjacency matrix $\tilde{D}^{-1}\tilde{A}$와 attention score $\text{softmax}({Q^{(j)}K^{(j)T}\over\sqrt{d}})$, 그리고 node embedding $C^{(j-1)}W^{(j)}$과 value vector $C^{(j-1)}W^{(j)}_{V}$ 모두 정보를 통합하거나 전파하는 기능을 수행한다. 또한 두 경우 모두 embedding과 value vector를 곱하여 정보를 처리하므로 두 행렬 $\tilde{D}^{-1}\tilde{A}$와 $\mathrm{softmax}({Q^{(j)}K^{(j)T}\over\sqrt{d}})$가 상응관계에 있다고 볼 수 있다.
+
+이에 따라 저자는 GCN은 Attention Mechanism을 알려진 adjacency matrix로 대체한 Transformer의 특수한 경우로 볼 수 있으며, 반대로 Transformer는 전체적으로 연결된 node를 가정하고 학습 중 edge weight를 학습하는 Graph embedding algorithm으로 볼 수 있다고 주장하였다.
+
+
+
+### *Graph Convolutional Transformer*
+
+해당 연구의는 각 case에 대해 GCN과 Transformer를 복합적으로 사용하는 방법을 제시했으나, 이에 대한 한계로 Transformer가 숨겨진 encounter의 structure를 학습할 수 있는 가능성은 있으나, 단 한개의 정보도 없이 의미있는 connection을 만들어 내는 것을 Transformer의 Attention이 모든 feature들에 대해 진행 되고있는 것이 확인 되었다. 이를 해결하기 위해 2가지의 요소를 활용하였다.
+
+	1. EHR 데이터의 특성
+ 	2. feature간의 Conditional Probability
+
+EHR 데이터 상에서 encounter 기록에서 일부 connection이 허용되지 않는 다는 사실을 관찰하였다. 이는 한가지 Diagnosis를 통해 2개의 Treatment를 진행할 수는 있으나 첫번째 Treatment로 인해 두번째 Treatment가 진행되는 Treatment간의 connection을 예시로 들 수 있다.
+
+
+
+이러한 관찰을 기반으로 Attention 생성 단계에서 사용될 mask $M$을 만들 수 있으며, 이 $M$은 connection 허용 여부에 따라 값을 가지게 된다.
+
+또한, Transformer가 Attention을 잘 생성할 수 있게 하기 위해 학습 초기에 각 node간의 edge weight를 Conditional Probability를 이용하여 학습할 수 있도록 하였다. Conditional Probability는 feature간의 잠재적인 connection을 결정하는데 쓰일 수 있다.
+
+<img src="https://github.com/Coding-Child/nlp_master/assets/115800583/bb8c815a-8331-434d-a717-48a9995812d2" alt="image" style="zoom:50%;" />
+
+Figure 3과 같이 Chest Pain, Fever와 같은 Diagnosis node 및 EKG라는 Treatment node가 주어졌을 때 Structure 정보가 따로 없다면, 어떤 진단이 EKG를 요청하는지 알 수 없다. 그러나 Conditional Probability를 사용하여 $p(\text{EKG}|\text{Chest Pain}) > p(\text{EKG}|\text{Fever})$라는 Conditional Probablity간의 값을 비교하여 더 큰 값으로 edge weight를 정할 수 있다면, 어떤 진단이 해당 치료를 결정하는지 Structure를 알 수 있게 된다. 이러한 방식으로 각각 Diagnosis, Treatment, Response 코드들에 대해 Conditional Probability 계산 후 행렬 $P$를 생성하게 된다.
+
+
+
+이 연구는 주어진 $M$과 $P$를 사용하여 GCT가 가능한 정확한 Graph Structure를 복원하도록 학습하며 주어진 예측 작업을 해결하는데 도움이 되는 새로운 connection을 학습할 수 있게 하기 위해 다음의 식을 사용하였다.
+$$
+\hat{A}^{(j)} := \text{softmax}({Q^{(j)}K^{(j)T}\over\sqrt{d}} + M)\quad\quad\quad\quad(3)
+$$
+이 식은 기존의 Attention Matrix에 mask $M$을 추가한 식으로 가능한 연결에 대한 attention만 고려하여 불필요한 계산을 하지 않는다. 이를 통해 다음과 같은 self attention을 제안하였다.
+$$
+C^{(j)}=MLP^{(j)}(PC^{(j-1)}W_{V}^{(j)})\quad\text{when}\quad j=1,\\
+C^{(j)}=MLP^{(j)}(\hat{A}C^{(j-1)}W_{V}^{(j)})\quad\text{when}\quad j>1
+$$
+첫번째 GCT block에서는 Conditional Probability $P$를 사용하며, 이후의 block에서는 Masked $\hat{A}$를 이용하여 self-attention mechanism을 사용하여 node의 feature를 업데이트 하게 된다.
+
+이렇게 제안된 공식을 통해 모델을 업데이트 하기 위한 Loss function이 새로 정의가 되었다. 
+$$
+L_{reg}^{(j)}=D_{KL}(P\Vert\hat{A}^{(j)})\quad\text{when}\quad j=1,\\
+L_{reg}^{(j)}=D_{KL}(\hat{A}^{(j-1)}\Vert\hat{A}^{(j)})\quad\text{when}\quad j>1\\
+L = L_{pred}+\lambda\sum_{j}L_{reg}^{(j)}\quad\quad\quad\quad(4)
+$$
+위의 Loss function은 KL Divergence를 이용하여 GCT가 $P$에서 크게 벗어나지 않고, 오히려 $P$를 점진적으로 개선해 나가며 Attention Score가 그 자체로 확률 분포가 되게한다. 또한 $j$번째 block이 $j-1$번째 block의 attention 분포와 크게 벗어날 시 loss를 증가시키는 형식으로 업데이트를 진행하게 된다.
+
+
+
+## Experiments
+
+실험을 위해 Synthetic이라는 합성 데이터와 eICU dataset을 사용하였다.
+
+
+
+### *Synthetic Encounter Record*
+
+현재 공개되어진 EHR data 중 Structure 정보를 포함하는 data는 존재하지 않으므로 해당 연구에서는 GCT의 EHR data와 같은 visit-diagnosis-treatment-lab result의 계층 구조를 가진 합성 데이터를 생성하였다. 또한 실제 EHR data test를 위해 2014년 부터 2015년 사이의 미국 여러 지역에서 수집된 중환자실 기록으로 구축된 eICU 데이터를 사용하였다.
+
+<img src="https://github.com/Coding-Child/nlp_master/assets/115800583/5a152744-bac8-4dc0-a47e-a580199fa286" alt="image" style="zoom:50%;" />
+
+데이터의 distribution은 위의 Table 1과 같으며 Synthetic dataset은 합성 데이터인 만큼 각 node별 수가 일정하지만, eICU의 benchmark dataset의 경우 실제 수집된 dataset이므로 일정하지 않은 것을 볼 수 있다.
+
+
+
+### *Baseline Models*
+
+본 논문에서는 5가지의 Baseline Model을 사용하였다.
+
+- $\text{GCN}$: 기본적인 Graph Convolution Network
+- $\text{GCN}_P$: 행렬 $A$대신 Conditional Probability 행렬 $P$를 사용
+- $\text{GCN}_{random}$: 행렬 $A$대신 random하게 normalized된 행렬 사용
+- $\text{Shallow}$: 일반적인 단층의 feed-forward network
+- $\text{Deep}$: 다층의 feed-forward network
+
+
+
+### *Prediction Tasks*
+
+#### Graph reconstruction (Synthetic dataset) & Diagnosis-Treatment classification (Synthetic dataset)
+
+1. Graph reconstruction: $N$개의 특성을 가진 encounter가 주여졌을 때, 모델은 $N$개의 feature embedding $c$를 학습하여 Graph reconstruction을 수행한다.
+2. Diagnosis-Treatment classification: 특정 진단 코드($d_1$ 및 $d_2$)와 치료 코드($m_1$) 간의 연결이 있는 encounter에 레이블을 할당하여 모델이 진단과 치료코드 간의 실제 연결 구조를 학습하도록 하며, encounter에 각각의 코드가 존재하는지의 여부에 의존하여 점수를 얻지 못하도록 제한하였다.
+
+<img src="https://github.com/Coding-Child/nlp_master/assets/115800583/66871cd2-17e8-4e10-9caf-c6be9c59c61d" alt="image" style="zoom:50%;" />
+
+Baseline의 모델보다 GCT가 각 Task에서 약 2~3%의 성능 향상을 이뤄낸 것을 볼 수 있다. 또한 이 Task에서 평가 metric을 AUCPR을 사용하였다 이는 Precision과 Recall에 대해 ROC-curve 곡선의 면적을 재는 것으로 Recall의 결과를 더 잘 반영하기 위해 사용한다.
+
+
+
+#### Masked diagnosis code prediction (Synthetic dataset & eICU dataset)
+
+1. Masked diagnosis code prediction: encounter가 주어진 경우, 무작위로 선택된 진단 코드 $d_i$를 mask를 씌워 masked 코드의 embedding을 학습하여 실제 코드를 예측한다.
+
+<img src="https://github.com/Coding-Child/nlp_master/assets/115800583/89fdd3ba-9e36-4632-b7b0-45c93859b66c" alt="image" style="zoom:50%;" />
+
+합성 데이터 셋에서 약 22%로 높은 성능은 아니지만 Baseline모델에 비해 잘 나온 것을 볼 수 있으며 실제 EHR 데이터셋에서도 77%의 성능으로 다른 모델에 비해 약 4%의 성능향상을 이루어냈다.
+
+
+
+#### Readmission prediction (eICU dataset) & Mortality prediction (eICU dataset)
+
+1. Readmission prediction: encounter가 주어진 경우 visit embedding $v$를 학습하여 환자의 중환자실 재입원을 예측한다.
+2. Mortality prediction: encounter가 주어진 경우 visi embedding $v$를 학습하여 중환자실 입원중 환자의 사망을 예측한다.
+
+<img src="https://github.com/Coding-Child/nlp_master/assets/115800583/e82590ac-fe1d-4377-abda-5d4575c00814" alt="image" style="zoom:50%;" />
+
+각각의 Task에서 약 53%, 약 61%의 높은 성능은 아니지만 Baseline 모델보다 미세하게 더 높게 나온 것을 볼 수 있다.
+
+
+
+### *Evaluating the Learned Encounter Structure*
+
+Graph reconstruction task에서 Transformer와 GCT의 학습된 Structure를 분석하여 두 모델이 얼마나 Structure 정보를 잘 학습하였는지 평가한 것으로 각각 KL Divergence 값과 Entropy가 낮을 수록 학습이 잘된 모델이다.
+
+<img src="https://github.com/Coding-Child/nlp_master/assets/115800583/e8baf51c-23fa-4e97-a547-b6ede3166d48" alt="image" style="zoom:50%;" />
+
+Transformer와 비교했을때 KL Divergence 값과 Entropy에서 모두 낮게 나오는 것을 볼 수 있지만, $\text{GCN_{P}}$와 비교했을 때는 비슷하거나 조금 더 높은 값을 계산하는 것을 알 수 있다.
+
+
+
+### *Attention Behavior Visualization*
+
+<img src="https://github.com/Coding-Child/nlp_master/assets/115800583/0bb0797d-4aab-4d44-86df-0cd69b312021" alt="image" style="zoom:50%;" />
+
+위의 Attention Figure는 모델의 각 Self-attention block별로 Attention score를 시각화한 것이다. Figure의 Blue bar는 D_199 진단 코드가 다른 모든 코드에 주어진 Attention score이며, Red bar는 Conditional probability 기반의 Attention score이다. 마지막으로 Purple bar는 실제 EHR의 관계를 수치화한 것이다.
+
+Block 1에서는 T_50부터 T_991까지의 모든 코드에 아주 미세하게 모델이 Attention을 진행하였고 이에 Conditional probability를 통해 T_314부터 T_360까지의 코드에 보정을 진행하였으며, 점차 Block을 거칠 수록 T_939의 코드에 모델이 Attention을 하며, Conditioanl Probability 행렬 *P*에서 벗어나지 않고 학습이 되고 있는 것을 볼 수 있다.
+
+
+
+## Conclusion
+
+이 논문의 Conclusion은 다음과 같이 3가지로 나눌 수 있다.
+
+- GCT는 완전한 진료 구조 정보가 필요한 이전의 최첨단 방법의 문제를 해결하였다.
+- GCT는 합성 데이터와 공개 EHR 데이터셋에서 기준 모델을 능가하여, 일반적인 EHR 모델링 알고리즘으로서의 잠재력을 보여주었다.
+- GCT와 RNN을 결합하여 심부전 진단 예측이나 예기치 않은 응급실 입원 예측과 같은 환자 수준 예측 작업을 수행하면서, 의학적으로 더 의미 있는 패턴을 학습하도록 attention mechanism을 개선할 수 있다.
+
+
+
+이상으로 논문 리뷰를 마치도록 한다.
