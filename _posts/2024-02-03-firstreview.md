@@ -53,7 +53,6 @@ EHR 데이터의 경우 보통 계층적 그래프로 표현될 수 있는 관�
 
 
 ## Method
-
 ### *Electronic Health Records as a Graph*
 
 ![image-20240203142959322](https://github.com/mmistakes/minimal-mistakes/assets/126770258/7c3682a9-8040-40d4-a9a6-b23e479309c6){: width="50%"",height="50%""}
