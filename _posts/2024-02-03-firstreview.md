@@ -1,19 +1,11 @@
 ---
-
 layout: single
-
 title: "[논문 리뷰] Learning the Graphical Structure of Electronic Health Records with Graph Convolutional Transformer (AAAI, 2019)"
-
 decription: "Medical AI Paper review"
-
 comments: true
-
 published: true
-
 categories: Medical AI
-
-typora-copy-images-to: ../assets/images/2024-02-03-firstreview
-
+use_math: true
 ---
 
 
