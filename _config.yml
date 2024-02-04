@@ -281,4 +281,4 @@ defaults:
       related: true
       mathjax: true
       use_math: true
-      show_data: true
+      show_date: true
