@@ -8,12 +8,22 @@ main:
     url: /search/
 
 docs:
-  - title: Contents
+  - title: Tab
     children: 
       - title: "Category"
         url: /categories/
       - title: "Tag"
         url: /tags/
+  - title: Shortcut
+    children: 
+      - title: "NLP"
+        url: /categories/NLP/
+      - title: "Computer Vision"
+        url: /categories/CV/
+      - title: "Medical AI"
+        url: /categories/MedicalAI/
+      - title: "SSL"
+        url: /categories/SSL/
   # - title: "About"
   #   url: https://mmistakes.github.io/minimal-mistakes/about/
   # - title: "Sample Posts"
