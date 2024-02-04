@@ -17,13 +17,13 @@ docs:
   - title: Shortcut
     children: 
       - title: "NLP"
-        url: /categories/NLP/
+        url: /categories/nlp/
       - title: "Computer Vision"
-        url: /categories/CV/
+        url: /categories/cv/
       - title: "Medical AI"
-        url: /categories/MedicalAI/
+        url: /categories/medicalai/
       - title: "SSL"
-        url: /categories/SSL/
+        url: /categories/ssl/
   # - title: "About"
   #   url: https://mmistakes.github.io/minimal-mistakes/about/
   # - title: "Sample Posts"
