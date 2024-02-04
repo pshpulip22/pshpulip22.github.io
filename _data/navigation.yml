@@ -19,7 +19,7 @@ docs:
     - title: "Category"
       use: true
     - title: "Tag"
-      - use: true
+      use: false
   # - title: "About"
   #   url: https://mmistakes.github.io/minimal-mistakes/about/
   # - title: "Sample Posts"
