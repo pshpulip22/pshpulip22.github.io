@@ -1,5 +1,9 @@
-.MathJax_Display, .math-display {
+// 클래스를 사용하여 MathJax 수식을 중앙 정렬
+.MathJax_Display {
+    display: block !important;
     text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 // 이미지 중앙 정렬
