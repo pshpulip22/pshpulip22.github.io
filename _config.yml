@@ -119,6 +119,9 @@ author:
     - label: "Instagram"
       icon: "fab fa-fw fa-instagram"
       url: "https://www.instagram.com/p_tngud_22/"
+    - label: "Linkedin"
+      icon: "fab fa-fw fa-linkedin"
+      url: "https://www.linkedin.com/in/%EC%88%98%ED%98%95-%EB%B0%95-4346a3287/"
 
 # Site Footer
 footer:
