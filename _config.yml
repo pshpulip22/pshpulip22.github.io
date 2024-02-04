@@ -108,7 +108,7 @@ author:
   avatar           : "/assets/images/profile.jpg" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : "I will be a leader in the Medical AI industry"
   location         : "Catholic University of Korea"
-  email            : "pshpulip22@catholic.ac.kr"
+  # email            : "pshpulip22@catholic.ac.kr"
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
@@ -116,6 +116,9 @@ author:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/Coding-Child"
+    - label: "Instagram"
+      icon: "fab fa-fw fa-instagram"
+      url: "https://www.instagram.com/p_tngud_22/"
 
 # Site Footer
 footer:
@@ -137,7 +140,7 @@ footer:
       # url:
     - label: "Instagram"
       icon: "fab fa-fw fa-instagram"
-      # url:
+      # url: "https://www.instagram.com/p_tngud_22/"
 
 
 # Reading Files
