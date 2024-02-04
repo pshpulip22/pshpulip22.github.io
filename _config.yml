@@ -16,7 +16,7 @@ future: true
 
 # Site Settings
 locale                   : "ko-KR"
-title                    : "Suhyeong's Study Blog"
+title                    : "Study Blog"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "Suhyeong Park"
