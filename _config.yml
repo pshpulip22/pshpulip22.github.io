@@ -17,8 +17,8 @@ future: true
 # Site Settings
 locale                   : "ko-KR"
 title                    : "Study Blog"
-title_separator          : "-"
-subtitle                 : # site tagline that appears below site title in masthead
+title_separator          : "|"
+subtitle                 : "Small steps for growth"
 name                     : "Suhyeong Park"
 description              : "This is paper review & code review page"
 url                      : "https://pshpulip22.github.io"
