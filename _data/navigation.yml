@@ -17,15 +17,15 @@ docs:
   - title: Shortcut
     children: 
       - title: "NLP"
-        url: /categories/nlp/
+        url: /categories/#nlp/
       - title: "Computer Vision"
-        url: /categories/cv/
+        url: /categories/#computervision/
       - title: "GNN"
-        url: /categories/gnn/
+        url: /categories/#gnn/
       - title: "Medical AI"
-        url: /categories/medicalai/
+        url: /categories/#medicalai/
       - title: "SSL"
-        url: /categories/ssl/
+        url: /categories/#ssl/
   # - title: "About"
   #   url: https://mmistakes.github.io/minimal-mistakes/about/
   # - title: "Sample Posts"
