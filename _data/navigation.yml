@@ -20,6 +20,8 @@ docs:
         url: /categories/nlp/
       - title: "Computer Vision"
         url: /categories/cv/
+      - title: "GNN"
+        url: /categories/gnn/
       - title: "Medical AI"
         url: /categories/medicalai/
       - title: "SSL"
