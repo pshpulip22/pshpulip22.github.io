@@ -19,7 +19,7 @@ counts:
   - title: "Category"
     use: true
   - title: "Tag"
-    use: false
+    use: true
   # - title: "About"
   #   url: https://mmistakes.github.io/minimal-mistakes/about/
   # - title: "Sample Posts"
