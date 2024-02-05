@@ -285,5 +285,3 @@ defaults:
       mathjax: true
       use_math: true
       show_date: true
-      sidebar:
-        nav: "counts"
